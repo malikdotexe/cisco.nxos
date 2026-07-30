@@ -452,6 +452,66 @@ class TestNxosRouteMapsModule(TestNxosModule):
         self.assertEqual(set(result["parsed"][0]), set(parsed[0]))
         self.assertEqual(set(result["parsed"][1]), set(parsed[1]))
 
+    def test_nxos_route_maps_parsed_named_as_path_acl(self):
+        # Named AS-path ACL (e.g. COLO-PEER) must parse as match.as_path (list of
+        # str), not match.metric (list of int). Regression for AAP-83883.
+        set_module_args(
+            dict(
+                running_config=dedent(
+                    """\
+                    route-map ARY-FROM-COLO-BRC permit 10
+                      match as-path COLO-PEER
+                    """,
+                ),
+                state="parsed",
+            ),
+            ignore_provider_arg,
+        )
+
+        parsed = [
+            dict(
+                route_map="ARY-FROM-COLO-BRC",
+                entries=[
+                    dict(
+                        action="permit",
+                        sequence=10,
+                        match=dict(as_path=["COLO-PEER"]),
+                    ),
+                ],
+            ),
+        ]
+
+        result = self.execute_module(changed=False)
+        self.assertEqual(result["parsed"], parsed)
+        self.assertNotIn("metric", result["parsed"][0]["entries"][0]["match"])
+
+    def test_nxos_route_maps_gathered_named_as_path_acl(self):
+        # Same named AS-path ACL coverage via gathered (facts validate_config path).
+        self.get_config.return_value = dedent(
+            """\
+            route-map ARY-FROM-COLO-BRC permit 10
+              match as-path COLO-PEER
+            """,
+        )
+        set_module_args(dict(state="gathered"), ignore_provider_arg)
+
+        gathered = [
+            dict(
+                route_map="ARY-FROM-COLO-BRC",
+                entries=[
+                    dict(
+                        action="permit",
+                        sequence=10,
+                        match=dict(as_path=["COLO-PEER"]),
+                    ),
+                ],
+            ),
+        ]
+
+        result = self.execute_module(changed=False)
+        self.assertEqual(result["gathered"], gathered)
+        self.assertNotIn("metric", result["gathered"][0]["entries"][0]["match"])
+
     def test_nxos_route_maps_gathered(self):
         # test parsed
         self.get_config.return_value = dedent(

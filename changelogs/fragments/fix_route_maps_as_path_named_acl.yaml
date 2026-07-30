@@ -1,0 +1,6 @@
+---
+bugfixes:
+  - nxos_route_maps / nxos_facts - ensure ``match as-path <named-acl>`` (for example
+    ``COLO-PEER``) is parsed as ``match.as_path`` (list of strings) and is not
+    treated as ``match.metric`` during facts ``validate_config``, so gathering
+    route-map network resources succeeds.
