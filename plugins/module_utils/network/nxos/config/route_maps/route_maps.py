@@ -32,6 +32,9 @@ from ansible_collections.cisco.nxos.plugins.module_utils.network.nxos.rm_templat
 )
 
 
+MATCH_METRIC = "match.metric"
+
+
 class Route_maps(ResourceModule):
     """
     The nxos_route_maps config class
@@ -93,7 +96,7 @@ class Route_maps(ResourceModule):
             "match.ipv6.next_hop.prefix_lists",
             "match.ipv6.route_source.prefix_lists",
             "match.mac_list",
-            "match.metric",
+            MATCH_METRIC,
             "match.ospf_area",
             "match.route_types",
             "match.source_protocol",
@@ -228,7 +231,7 @@ class Route_maps(ResourceModule):
                 wx = w_set
                 hx = h_set
 
-            if x == "match.metric":
+            if x == MATCH_METRIC:
                 # list of dicts (value + optional deviation) — not hashable for set()
                 def _metric_key(entry):
                     if isinstance(entry, dict):
@@ -240,7 +243,7 @@ class Route_maps(ResourceModule):
 
             elif isinstance(wx, list):
                 wx = set(wx)
-            if x != "match.metric" and isinstance(hx, list):
+            if x != MATCH_METRIC and isinstance(hx, list):
                 hx = set(hx)
 
             if wx != hx:
