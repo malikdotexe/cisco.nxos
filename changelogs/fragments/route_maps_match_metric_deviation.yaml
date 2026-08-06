@@ -1,10 +1,7 @@
 ---
-bugfixes:
-  - nxos_route_maps - Fix fact gathering / parsed-state crash when route-map
-    entries use NX-OS metric deviation syntax
-    (``match metric <value> +- <deviation>``). Previously the parser split
-    tokens such as ``0 +- 100`` into ``["0", "+-", "100"]`` and
-    ``validate_config`` failed because ``match.metric`` was typed as a list
-    of integers. ``match.metric`` elements are now dictionaries with required
-    ``value`` (replacing the previous list-of-int form) and a new optional
-    ``deviation`` parameter (support case 04500155).
+minor_changes:
+  - nxos_route_maps - Add support for NX-OS metric deviation syntax
+    (``match metric <value> +- <deviation>``) and fix fact gathering /
+    parsed-state crash on that CLI. ``match.metric`` elements are now
+    dictionaries with required ``value`` (replacing the previous list-of-int
+    form) and a new optional ``deviation`` parameter (support case 04500155).
