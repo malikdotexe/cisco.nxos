@@ -118,7 +118,7 @@ class Snmp_serverTemplate(NetworkTemplate):
                       "snmp-server community {{ name }}"
                       "{{ (' use-ipv4acl ' + use_ipv4acl) if use_ipv4acl is defined else '' }} "
                       "{{ (' use-ipv6acl ' + use_ipv6acl) if use_ipv6acl is defined else '' }}",
-
+            "remval": "snmp-server community {{ name }}",
             "result": {
                 "communities": [
                     {

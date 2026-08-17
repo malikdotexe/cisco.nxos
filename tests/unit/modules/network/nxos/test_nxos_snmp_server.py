@@ -591,6 +591,37 @@ class TestNxosSnmpServerModule(TestNxosModule):
         result = self.execute_module(changed=True)
         self.assertEqual(set(result["commands"]), set(commands))
 
+    def test_nxos_snmp_server_communities_replaced(self):
+        # test replaced for communities - remove unwanted community without re-adding
+        self.get_config.return_value = dedent(
+            """\
+            snmp-server community private group network-operator
+            snmp-server community public group network-operator
+            snmp-server community private use-ipv4acl myacl
+            """,
+        )
+        set_module_args(
+            dict(
+                config=dict(
+                    communities=[
+                        dict(name="public", group="network-operator"),
+                        dict(name="secret", group="network-operator"),
+                    ],
+                ),
+                state="replaced",
+            ),
+            ignore_provider_arg,
+        )
+        commands = [
+            "snmp-server community secret  group network-operator \nsnmp-server community secret  \nsnmp-server community secret ",
+            "no snmp-server community private",
+        ]
+        result = self.execute_module(changed=True)
+        self.assertEqual(set(result["commands"]), set(commands))
+        for cmd in result["commands"]:
+            if cmd.startswith("no snmp-server community"):
+                self.assertNotIn("\nsnmp-server community", cmd)
+
     def test_nxos_snmp_server_users_merged_1(self):
         # test merged for users
         self.get_config.return_value = dedent(

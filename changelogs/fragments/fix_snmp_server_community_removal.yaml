@@ -1,0 +1,4 @@
+bugfixes:
+  - nxos_snmp_server - Fix community removal on replaced, overridden, and deleted
+    states by adding a remval template so deletes emit a single
+    ``no snmp-server community`` command instead of re-adding the community.
