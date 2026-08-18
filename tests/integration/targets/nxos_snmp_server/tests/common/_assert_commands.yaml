@@ -1,0 +1,11 @@
+---
+- name: Assert that correct set of commands were generated
+  ansible.builtin.assert:
+    that:
+      - expected_commands | symmetric_difference(flattened_actual_commands) | length == 0
+  vars:
+    flattened_actual_commands: >-
+      {{
+        actual_commands | join('\n') | split('\n') | map('trim')
+        | reject('equalto', '') | list
+      }}
