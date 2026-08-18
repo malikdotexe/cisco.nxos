@@ -99,7 +99,9 @@ overridden:
     - no snmp-server user temp_user
     - snmp-server host 192.0.2.1 source-interface Ethernet1/1
     - snmp-server host 192.0.3.2 informs version 3 auth NMS
-    - "snmp-server community secret  group network-operator \nsnmp-server community secret  \nsnmp-server community secret "
+    - snmp-server community secret  group network-operator
+    - snmp-server community secret
+    - snmp-server community secret
     - no snmp-server community private
 
 replaced:
@@ -110,7 +112,9 @@ replaced:
     - snmp-server location serverroom-2
     - snmp-server host 192.0.2.1 source-interface Ethernet1/1
     - snmp-server host 192.0.3.2 informs version 3 auth NMS
-    - "snmp-server community secret  group network-operator \nsnmp-server community secret  \nsnmp-server community secret "
+    - snmp-server community secret  group network-operator
+    - snmp-server community secret
+    - snmp-server community secret
     - no snmp-server community private
   after:
     aaa_user:

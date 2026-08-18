@@ -69,7 +69,7 @@
     - name: Assert that correct set of commands were generated
       ansible.builtin.assert:
         that:
-          - "{{ overridden['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
+          - "{{ overridden['commands'] | symmetric_difference(result['commands'] | join('\n') | split('\n') | map('trim') | reject('equalto', '') | list) | length == 0 }}"
 
     - name: Override snmp-server configurations of listed snmp-server with provided configurations (idempotent)
       register: result
