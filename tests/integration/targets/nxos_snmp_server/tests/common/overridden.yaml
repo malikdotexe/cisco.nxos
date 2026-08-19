@@ -66,10 +66,11 @@
         state: overridden
       register: result
 
+    # Default SNMP users vary by NX-OS image; compare resource commands only.
     - ansible.builtin.include_tasks: _assert_commands.yaml
       vars:
         expected_commands: "{{ overridden['commands'] }}"
-        actual_commands: "{{ result['commands'] }}"
+        actual_commands: "{{ result['commands'] | reject('search', 'snmp-server user') | list }}"
 
     - name: Override snmp-server configurations of listed snmp-server with provided configurations (idempotent)
       register: result

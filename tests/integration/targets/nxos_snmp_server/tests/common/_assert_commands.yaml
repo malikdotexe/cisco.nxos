@@ -2,10 +2,11 @@
 - name: Assert that correct set of commands were generated
   ansible.builtin.assert:
     that:
-      - expected_commands | symmetric_difference(flattened_actual_commands) | length == 0
+      - expected_commands | symmetric_difference(flat_commands) | length == 0
+    fail_msg: >-
+      Command mismatch.
+      only_in_expected={{ expected_commands | difference(flat_commands) }}
+      only_in_actual={{ flat_commands | difference(expected_commands) }}
   vars:
-    flattened_actual_commands: >-
-      {{
-        actual_commands | join('\n') | split('\n') | map('trim')
-        | reject('equalto', '') | list
-      }}
+    newline: "\n"
+    flat_commands: "{{ actual_commands | map('split', newline) | flatten | map('trim') | reject('equalto', '') | list }}"
