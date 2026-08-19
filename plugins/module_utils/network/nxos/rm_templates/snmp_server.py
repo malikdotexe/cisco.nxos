@@ -108,22 +108,29 @@ class Snmp_serverTemplate(NetworkTemplate):
                 ^snmp-server
                 \scommunity\s(?P<community>\S+)
                 (\sgroup\s(?P<group>\S+))?
+                (\s(?P<ro>ro))?
+                (\s(?P<rw>rw))?
                 (\suse-ipv4acl\s(?P<use_ipv4acl>\S+))?
                 (\suse-ipv6acl\s(?P<use_ipv6acl>\S+))?
                 $""", re.VERBOSE,
             ),
-            "setval": "snmp-server community {{ name }} {{ (' group ' + group) if group is defined else '' }} \n"
-                      "snmp-server community {{ name }} {{ ' ro' if ro|d(False) else ''}}"
-                      "{{ ' rw' if rw|d(False) else ''}} \n"
-                      "snmp-server community {{ name }}"
-                      "{{ (' use-ipv4acl ' + use_ipv4acl) if use_ipv4acl is defined else '' }} "
-                      "{{ (' use-ipv6acl ' + use_ipv6acl) if use_ipv6acl is defined else '' }}",
+            "setval": "{{ ["
+                      "(('snmp-server community ' + name + ' group ' + group) if group is defined else None),"
+                      "(('snmp-server community ' + name + ' ro') if ro|d(False) else None),"
+                      "(('snmp-server community ' + name + ' rw') if rw|d(False) else None),"
+                      "(('snmp-server community ' + name"
+                      " + ((' use-ipv4acl ' + use_ipv4acl) if use_ipv4acl is defined else '')"
+                      " + ((' use-ipv6acl ' + use_ipv6acl) if use_ipv6acl is defined else ''))"
+                      " if (use_ipv4acl is defined or use_ipv6acl is defined) else None)"
+                      "] | select('string') | list | join('\\n') }}",
             "remval": "snmp-server community {{ name }}",
             "result": {
                 "communities": [
                     {
                         "name": "{{ community }}",
                         "group": "{{ group }}",
+                        "ro": "{{ True if ro is defined else None }}",
+                        "rw": "{{ True if rw is defined else None }}",
                         "use_ipv4acl": "{{ use_ipv4acl }}",
                         "use_ipv6acl": "{{ use_ipv6acl }}",
                     },
