@@ -65,6 +65,15 @@
 - name: Find admin user SNMP engineid (second)
   ansible.builtin.set_fact:
     admin_snmp_engineid_2: "{{ admin_snmp_engineid_2[0] | default('') }}"
+
+- name: Capture baseline snmp-server config for cleanup
+  cisco.nxos.nxos_snmp_server:
+    state: gathered
+  register: _snmp_baseline
+
+- name: Persist baseline snmp-server config
+  ansible.builtin.set_fact:
+    snmp_baseline_config: "{{ _snmp_baseline.gathered | default({}) }}"
 # - name: Grep zuul user SNMP localized key
 #   ansible.builtin.set_fact:
 #     zuul_snmp_passwd:
@@ -75,11 +84,10 @@
 #   ansible.builtin.set_fact:
 #     zuul_snmp_passwd: "{{ zuul_snmp_passwd[0] | default('') }}"
 
-# uncomment later for nxapi
-# - name: Include the NX-API tasks
-#   ansible.builtin.include_tasks: nxapi.yaml
-#   tags:
-#     - nxapi
+- name: Include the NX-API tasks
+  ansible.builtin.include_tasks: nxapi.yaml
+  tags:
+    - nxapi
 
 - name: Include the CLI tasks
   ansible.builtin.include_tasks: cli.yaml

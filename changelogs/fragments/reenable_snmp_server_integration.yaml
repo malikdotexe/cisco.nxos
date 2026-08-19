@@ -6,5 +6,7 @@ bugfixes:
     device configuration.
   - nxos_snmp_server - Emit only configured community attribute lines so empty
     ``snmp-server community`` commands no longer reset access to read-only.
+  - nxos_snmp_server - Emit each community attribute as its own CLI command so
+    NX-API does not reject multi-line community configuration.
 minor_changes:
-  - nxos_snmp_server - Re-enable network_cli integration tests.
+  - nxos_snmp_server - Re-enable network_cli and NX-API integration tests.

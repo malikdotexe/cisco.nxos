@@ -87,8 +87,10 @@ class TestNxosSnmpServerModule(TestNxosModule):
             ignore_provider_arg,
         )
         commands = [
-            "snmp-server community private group network-admin\nsnmp-server community private ro",
-            "snmp-server community public rw\nsnmp-server community public use-ipv4acl myacl",
+            "snmp-server community private group network-admin",
+            "snmp-server community private ro",
+            "snmp-server community public rw",
+            "snmp-server community public use-ipv4acl myacl",
             "snmp-server globalEnforcePriv",
             "snmp-server tcp-session auth",
             "snmp-server counter cache timeout 1800",
@@ -1053,8 +1055,10 @@ class TestNxosSnmpServerModule(TestNxosModule):
             "snmp-server location lab",
             "snmp-server mib community-map public context public1",
             "snmp-server source-interface traps Ethernet1/2",
-            "snmp-server community public rw\nsnmp-server community public use-ipv4acl myacl use-ipv6acl myaclv6",
-            "snmp-server community private group network-admin\nsnmp-server community private ro",
+            "snmp-server community public rw",
+            "snmp-server community public use-ipv4acl myacl use-ipv6acl myaclv6",
+            "snmp-server community private group network-admin",
+            "snmp-server community private ro",
         ]
         result = self.execute_module(changed=False)
         self.assertEqual(set(result["rendered"]), set(rendered))

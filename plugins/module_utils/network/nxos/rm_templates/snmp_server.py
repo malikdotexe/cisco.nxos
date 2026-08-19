@@ -22,6 +22,25 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.r
 )
 
 
+def _template_communities(data):
+    cmds = []
+    name = data["name"]
+    if data.get("group"):
+        cmds.append("snmp-server community {0} group {1}".format(name, data["group"]))
+    if data.get("ro"):
+        cmds.append("snmp-server community {0} ro".format(name))
+    if data.get("rw"):
+        cmds.append("snmp-server community {0} rw".format(name))
+    acl_parts = []
+    if data.get("use_ipv4acl"):
+        acl_parts.append("use-ipv4acl {0}".format(data["use_ipv4acl"]))
+    if data.get("use_ipv6acl"):
+        acl_parts.append("use-ipv6acl {0}".format(data["use_ipv6acl"]))
+    if acl_parts:
+        cmds.append("snmp-server community {0} {1}".format(name, " ".join(acl_parts)))
+    return cmds
+
+
 def _template_hosts(data):
     cmd = "snmp-server host {0}".format(data["host"])
     if data.get("traps"):
@@ -114,15 +133,7 @@ class Snmp_serverTemplate(NetworkTemplate):
                 (\suse-ipv6acl\s(?P<use_ipv6acl>\S+))?
                 $""", re.VERBOSE,
             ),
-            "setval": "{{ ["
-                      "(('snmp-server community ' + name + ' group ' + group) if group is defined else None),"
-                      "(('snmp-server community ' + name + ' ro') if ro|d(False) else None),"
-                      "(('snmp-server community ' + name + ' rw') if rw|d(False) else None),"
-                      "(('snmp-server community ' + name"
-                      " + ((' use-ipv4acl ' + use_ipv4acl) if use_ipv4acl is defined else '')"
-                      " + ((' use-ipv6acl ' + use_ipv6acl) if use_ipv6acl is defined else ''))"
-                      " if (use_ipv4acl is defined or use_ipv6acl is defined) else None)"
-                      "] | select('string') | list | join('\\n') }}",
+            "setval": _template_communities,
             "remval": "snmp-server community {{ name }}",
             "result": {
                 "communities": [
