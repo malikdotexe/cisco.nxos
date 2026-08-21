@@ -1,4 +1,20 @@
 ---
+# Extra SNMP user used by replaced/overridden. Combined with device baseline
+# users at runtime so those states do not emit `no snmp-server user <login>`
+# (NX-OS: "<user> account cannot be deactivated" on CML `ansible`, local `cisco`).
+snmp_test_user_auth:
+  - user: snmp_user_1
+    group: network-operator
+    authentication:
+      algorithm: md5
+      password: "0x5632724fb8ac3699296af26281e1d0f1"
+      localized_key: true
+
+snmp_test_user_acls:
+  - user: snmp_user_1
+    ipv4: acl1
+    ipv6: acl2
+
 merged:
   before:
     users:

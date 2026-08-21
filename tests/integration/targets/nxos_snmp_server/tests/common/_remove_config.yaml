@@ -32,4 +32,7 @@
     loop_var: restore_cmd
   vars:
     newline: "\n"
-  ignore_errors: true
+  failed_when: >-
+    failed | default(false)
+    and ('No such SNMP target' not in (msg | default('') | string))
+    and ('cannot be deactivated' not in (msg | default('') | string))

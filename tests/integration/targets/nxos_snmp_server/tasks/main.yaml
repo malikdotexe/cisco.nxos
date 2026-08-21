@@ -74,6 +74,12 @@
 - name: Persist baseline snmp-server config
   ansible.builtin.set_fact:
     snmp_baseline_config: "{{ _snmp_baseline.gathered | default({}) }}"
+
+- name: Combine baseline SNMP users with test users
+  ansible.builtin.set_fact:
+    snmp_replaced_users:
+      auth: "{{ (snmp_baseline_config.users.auth | default([])) + snmp_test_user_auth }}"
+      use_acls: "{{ (snmp_baseline_config.users.use_acls | default([])) + snmp_test_user_acls }}"
 # - name: Grep zuul user SNMP localized key
 #   ansible.builtin.set_fact:
 #     zuul_snmp_passwd:

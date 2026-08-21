@@ -2,3 +2,6 @@ bugfixes:
   - nxos_snmp_server - Fix community removal on replaced, overridden, and deleted
     states by adding a remval template so deletes emit a single
     ``no snmp-server community`` command instead of re-adding the community.
+  - nxos_snmp_server - Recreate a community (delete then set) when replaced or
+    overridden changes attributes on an existing community name, so
+    ``no snmp-server community NAME`` cannot wipe the just-applied config.

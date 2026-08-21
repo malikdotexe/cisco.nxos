@@ -38,6 +38,11 @@ def _template_communities(data):
         acl_parts.append("use-ipv6acl {0}".format(data["use_ipv6acl"]))
     if acl_parts:
         cmds.append("snmp-server community {0} {1}".format(name, " ".join(acl_parts)))
+    if not cmds:
+        # Name-only create: NX-OS accepts a bare community (defaults to read-only).
+        # Do not emit this line when other attributes are set; a trailing bare
+        # `snmp-server community NAME` resets access to network-operator.
+        cmds.append("snmp-server community {0}".format(name))
     return cmds
 
 

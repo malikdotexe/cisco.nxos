@@ -624,6 +624,54 @@ class TestNxosSnmpServerModule(TestNxosModule):
             if cmd.startswith("no snmp-server community"):
                 self.assertNotIn("\nsnmp-server community", cmd)
 
+    def test_nxos_snmp_server_communities_replaced_same_name_update(self):
+        # same community name with a different group must delete then recreate
+        self.get_config.return_value = dedent(
+            """\
+            snmp-server community private group network-admin
+            snmp-server community private use-ipv4acl myacl
+            """,
+        )
+        set_module_args(
+            dict(
+                config=dict(
+                    communities=[
+                        dict(name="private", group="network-operator"),
+                    ],
+                ),
+                state="replaced",
+            ),
+            ignore_provider_arg,
+        )
+        result = self.execute_module(changed=True)
+        commands = result["commands"]
+        self.assertIn("no snmp-server community private", commands)
+        self.assertIn("snmp-server community private group network-operator", commands)
+        self.assertNotIn("snmp-server community private use-ipv4acl myacl", commands)
+        self.assertLess(
+            commands.index("no snmp-server community private"),
+            commands.index("snmp-server community private group network-operator"),
+        )
+
+    def test_nxos_snmp_server_communities_merged_name_only(self):
+        self.get_config.return_value = dedent(
+            """\
+            """,
+        )
+        set_module_args(
+            dict(
+                config=dict(
+                    communities=[
+                        dict(name="public"),
+                    ],
+                ),
+                state="merged",
+            ),
+            ignore_provider_arg,
+        )
+        result = self.execute_module(changed=True)
+        self.assertEqual(result["commands"], ["snmp-server community public"])
+
     def test_nxos_snmp_server_communities_merged_idempotent(self):
         # split community lines must round-trip as one object per name
         self.get_config.return_value = dedent(
