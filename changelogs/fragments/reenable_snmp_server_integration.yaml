@@ -9,4 +9,5 @@ bugfixes:
   - nxos_snmp_server - Emit each community attribute as its own CLI command so
     NX-API does not reject multi-line community configuration.
 minor_changes:
-  - nxos_snmp_server - Re-enable network_cli and NX-API integration tests.
+  - nxos_snmp_server - Re-enable network_cli and NX-API integration tests,
+    including the deleted state.

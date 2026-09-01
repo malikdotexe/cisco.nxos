@@ -250,3 +250,16 @@ parsed:
       - user: snmp_user_2
         ipv4: acl3
         ipv6: acl4
+
+# Commands for test-owned config from _populate_config.yaml. Login SNMP users
+# stay on the device (NX-OS will not deactivate the connected account), so the
+# deleted test treats extra `no snmp-server user` lines as out of scope.
+deleted:
+  commands:
+    - no snmp-server contact nxosswitchadmin@localhost
+    - no snmp-server location serverroom-1
+    - no snmp-server aaa-user cache-timeout 36000
+    - no snmp-server host 192.0.2.1 traps version 1 public
+    - no snmp-server community private
+    - no snmp-server community public
+    - no snmp-server enable traps system Clock-change-notification

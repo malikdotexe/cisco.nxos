@@ -40,10 +40,17 @@
       register: result
 
     # Default SNMP users vary by NX-OS image; compare resource commands only.
-    - ansible.builtin.include_tasks: _assert_commands.yaml
-      vars:
-        expected_commands: "{{ replaced['commands'] }}"
-        actual_commands: "{{ result['commands'] | reject('search', 'snmp-server user') | list }}"
+    - name: Assert that correct set of commands were generated
+      ansible.builtin.assert:
+        that:
+          - >
+            {{
+              result['commands']
+              | reject('search', 'snmp-server user')
+              | list
+              | symmetric_difference(replaced['commands'])
+              | length == 0
+            }}
 
     - name: Replace snmp-server configurations of listed snmp-server with provided configurations (idempotent)
       register: result

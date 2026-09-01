@@ -58,10 +58,14 @@
   register: result
 
 - name: Assert that correct set of commands were rendered
-  ansible.builtin.include_tasks: _assert_commands.yaml
-  vars:
-    expected_commands: "{{ rendered['commands'] }}"
-    actual_commands: "{{ result['rendered'] }}"
+  ansible.builtin.assert:
+    that:
+      - >
+        {{
+          result['rendered']
+          | symmetric_difference(rendered['commands'])
+          | length == 0
+        }}
 
 - name: Assert that rendered state did not change the device
   ansible.builtin.assert:

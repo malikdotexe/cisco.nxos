@@ -79,10 +79,15 @@
       loop_control:
         label: "Asserting user: {{ item.user }}"
 
-    - ansible.builtin.include_tasks: _assert_commands.yaml
-      vars:
-        expected_commands: "{{ merged['commands'] }}"
-        actual_commands: "{{ result['commands'] }}"
+    - name: Assert that correct set of commands were generated
+      ansible.builtin.assert:
+        that:
+          - >
+            {{
+              result['commands']
+              | symmetric_difference(merged['commands'])
+              | length == 0
+            }}
 
     - name: Assert that 'after' contact/location/aaa_user/traps configurations were correctly generated
       ansible.builtin.assert:
